@@ -36,3 +36,48 @@ resource "aws_subnet" "my_private_subnets" {
     Name = "my-private-subnet-${count.index + 1}"
   }
 }
+
+# Internet Gateway
+resource "aws_internet_gateway" "public_internet_gateway" {
+  vpc_id = aws_vpc.my_vpc_us_east_1.id
+  tags = {
+    Name = "public_igw"
+  }
+}
+
+
+# Route Tables for Public and Private Subnets:
+
+# Public Route Table
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.my_vpc_us_east_1.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.public_internet_gateway.id
+  }
+  tags = {
+    Name = "public-route"
+  }
+}
+
+# Associating Public Route Table to Public Subnet:
+resource "aws_route_table_association" "public_rt_subnet_association" {
+  count          = length(aws_subnet.my_public_subnets)
+  subnet_id      = aws_subnet.my_public_subnets[count.index].id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+# Private Route Table
+resource "aws_route_table" "private_route_table" {
+  vpc_id = aws_vpc.my_vpc_us_east_1.id
+  tags = {
+    Name = "private-route"
+  }
+}
+
+# Associating Private Route Table to Private Subnet:
+resource "aws_route_table_association" "private_rt_subnet_association" {
+  count          = length(aws_subnet.my_private_subnets)
+  subnet_id      = aws_subnet.my_private_subnets[count.index].id
+  route_table_id = aws_route_table.private_route_table.id
+}
