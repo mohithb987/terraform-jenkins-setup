@@ -4,6 +4,11 @@ variable "public_subnet_cidr" {}
 variable "private_subnet_cidr" {}
 variable "us_availability_zone" {}
 
+
+output "my_vpc_us_east_1_id" {
+  value = aws_vpc.my_vpc_us_east_1.id
+}
+
 # Setup VPC
 resource "aws_vpc" "my_vpc_us_east_1" {
   cidr_block = var.vpc_cidr
