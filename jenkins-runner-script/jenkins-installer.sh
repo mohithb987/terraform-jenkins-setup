@@ -14,14 +14,16 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
 sudo apt-get update
 yes | sudo apt-get install jenkins
 
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
 
 sleep 30
 echo "Sleeping for 30 seconds to wait until Jenkins installation is complete..."
 
 
 # Terraform Installation instructions from https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-sudo apt-get update
-yes | sudo yum -y install terraform
-terraform -help # to verify installation
+wget https://releases.hashicorp.com/terraform/1.6.5/terraform_1.6.5_linux_386.zip
+yes | sudo apt-get install unzip
+unzip 'terraform*.zip'
+sudo mv terraform /usr/local/bin/

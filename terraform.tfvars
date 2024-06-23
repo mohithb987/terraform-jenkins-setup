@@ -4,5 +4,5 @@ public_subnet_cidr   = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnet_cidr  = ["10.0.3.0/24", "10.0.4.0/24"]
 us_availability_zone = ["us-east-1a", "us-east-1c"]
 
-ec2_ami_id         = "ami-08a0d1e16fc3f61ea"
+ec2_ami_id         = "ami-04b70fa74e45c3917"
 public_key         = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfnARgSme6X9e8AXmGvalu91+1Cc0Zjk/arox8GJuY0 mohith@mohiths-MacBook-Air.local"
