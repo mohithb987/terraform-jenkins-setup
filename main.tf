@@ -14,3 +14,16 @@ module "security_group" {
   vpc_id              = module.networking.my_vpc_us_east_1_id
   ec2_jenkins_sg_name = "Enable port 8080 (HTTP) to access Jenkins"
 }
+
+module "jenkins" {
+  source                    = "./jenkins"
+  ami_id                    = var.ec2_ami_id
+  max_price                 = 0.021
+  instance_type             = "t2.medium"
+  tag_name                  = "Jenkins:Ubuntu Linux EC2 Spot Instance"
+  public_key                = var.public_key
+  subnet_id                 = tolist(module.networking.my_public_subnet_ids)[0]
+  sg_for_jenkins            = [module.security_group.EC2_SG_ssh_http_id, module.security_group.EC2_Jenkins_port_8080_id]
+  associate_public_ip_address  = true
+  user_data_install_jenkins = templatefile("./jenkins-runner-script/jenkins-installer.sh", {})
+}

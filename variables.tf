@@ -22,3 +22,13 @@ variable "us_availability_zone" {
   type        = list(string)
   description = "Availability Zones"
 }
+
+variable "ec2_ami_id" {
+  type        = string
+  description = "AMI ID for Ubuntu EC2 instance"
+}
+
+variable "public_key" {
+  type        = string
+  description = "Public Key to SSH into EC2 instance"
+}
