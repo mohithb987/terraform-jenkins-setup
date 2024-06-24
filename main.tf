@@ -16,14 +16,24 @@ module "security_group" {
 }
 
 module "jenkins" {
-  source                    = "./jenkins"
-  ami_id                    = var.ec2_ami_id
-  max_price                 = 0.021
-  instance_type             = "t2.medium"
-  tag_name                  = "Jenkins:Ubuntu Linux EC2 Spot Instance"
-  public_key                = var.public_key
-  subnet_id                 = tolist(module.networking.my_public_subnet_ids)[0]
-  sg_for_jenkins            = [module.security_group.EC2_SG_ssh_http_id, module.security_group.EC2_Jenkins_port_8080_id]
+  source                       = "./jenkins"
+  ami_id                       = var.ec2_ami_id
+  max_price                    = 0.021
+  instance_type                = "t2.medium"
+  tag_name                     = "Jenkins:Ubuntu Linux EC2 Spot Instance"
+  public_key                   = var.public_key
+  subnet_id                    = tolist(module.networking.my_public_subnet_ids)[0]
+  sg_for_jenkins               = [module.security_group.EC2_SG_ssh_http_id, module.security_group.EC2_Jenkins_port_8080_id]
   associate_public_ip_address  = true
-  user_data_install_jenkins = templatefile("./jenkins-runner-script/jenkins-installer.sh", {})
+  user_data_install_jenkins    = templatefile("./jenkins-runner-script/jenkins-installer.sh", {})
+}
+
+
+module "load_bal_tgt_group" {
+  source              = "./load-balancer-target-group"
+  lb_tgt_grp_name     = "jenkins-lb-target-group"
+  lb_tgt_grp_port     = 8080
+  lb_tgt_grp_protocol = "HTTP"
+  vpc_id              = module.networking.dev_proj_1_vpc_id
+  ec2_instance_id     = module.jenkins.jenkins_ec2_instance_ip  # assign ec2 instance to the target group
 }
