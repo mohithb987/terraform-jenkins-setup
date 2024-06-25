@@ -30,10 +30,31 @@ module "jenkins" {
 
 
 module "load_bal_tgt_group" {
-  source              = "./load-balancer-target-group"
-  lb_tgt_grp_name     = "jenkins-lb-target-group"
-  lb_tgt_grp_port     = 8080
-  lb_tgt_grp_protocol = "HTTP"
-  vpc_id              = module.networking.dev_proj_1_vpc_id
-  ec2_instance_id     = module.jenkins.jenkins_ec2_instance_ip  # assign ec2 instance to the target group
+  source                      = "./load-balancer-target-group"
+  lb_tgt_grp_name_JENKINS     = "jenkins-lb-target-group"
+  lb_tgt_grp_name_FALLBACK    = "fallback-lb-target-group"
+  lb_tgt_grp_port_JENKINS     = 8080
+  lb_tgt_grp_port_FALLBACK    = 80
+  lb_tgt_grp_protocol         = "HTTP"
+  sec_groups                  = [module.security_group.EC2_SG_ssh_http_id, module.security_group.EC2_Jenkins_port_8080_id]
+  vpc_id                      = module.networking.my_vpc_us_east_1_id
+  ec2_instance_id             = module.jenkins.jenkins_ec2_instance_id  # assign master EC2 instance to the target group
+  fallback_instance_subnet_id = tolist(module.networking.my_public_subnet_ids)[1]
+}
+
+module "application_load_bal" {
+  source                    = "./load-balancer"
+  lb_name                   = "appl-load-balancer"
+  is_internal               = false
+  lb_type                   = "application"   # being deployed on EC2 instances
+  sec_group                 = module.security_group.EC2_SG_ssh_http_id   # same as for EC2 instance
+  subnet_ids                = tolist(module.networking.my_public_subnet_ids)
+  lb_target_group_jenkins_arn = module.load_bal_tgt_group.lb_tgt_grp_JENKINS_arn
+  lb_target_group_fallback_arn = module.load_bal_tgt_group.lb_tgt_grp_FALLBACK_arn
+  ec2_instance_id           = module.jenkins.jenkins_ec2_instance_id
+  
+  # listener
+  lb_listner_port           = 80
+  lb_listner_protocol       = "HTTP"
+  lb_listner_default_action_type = "forward"
 }

@@ -8,6 +8,10 @@ variable "sg_for_jenkins" {}
 variable "associate_public_ip_address" {}
 variable "user_data_install_jenkins" {}
 
+output "jenkins_ec2_instance_id"{
+   value = aws_instance.jenkins_ec2_instance.id
+}
+
 resource "aws_instance" "jenkins_ec2_instance" {
   ami           = var.ami_id
   instance_market_options {
