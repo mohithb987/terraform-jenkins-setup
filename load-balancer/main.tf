@@ -50,7 +50,7 @@ resource "aws_lb_listener_rule" "forward_to_fallback" {
 
   condition {
     path_pattern {
-      values = ["/homepage"]
+      values = ["/"]
     }
   }
 }
