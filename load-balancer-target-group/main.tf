@@ -42,7 +42,7 @@ resource "aws_lb_target_group" "lb_tgt_grp_JENKINS" {
   protocol = var.lb_tgt_grp_protocol
   vpc_id   = var.vpc_id
   health_check {
-    path = "/"
+    path = "/login"
     port = var.lb_tgt_grp_port_JENKINS                 # jenkins port
     protocol            = "HTTP"
     healthy_threshold = 6
